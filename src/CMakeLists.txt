@@ -105,17 +105,27 @@ set(libclang_source
 add_library(cppast ${detail_header} ${header} ${source} ${libclang_source})
 target_compile_features(cppast PUBLIC cxx_std_11)
 target_include_directories(cppast PRIVATE ../include SYSTEM INTERFACE ../include)
-target_link_libraries(cppast PUBLIC type_safe _cppast_tiny_process _cppast_libclang)
+target_link_libraries(cppast PUBLIC type_safe _cppast_tiny_process)
 target_compile_definitions(cppast PUBLIC
                                 CPPAST_VERSION_MINOR="${cppast_VERSION_MINOR}"
                                 CPPAST_VERSION_MAJOR="${cppast_VERSION_MAJOR}"
-                                CPPAST_VERSION_STRING="${cppast_VERSION}")
+                                CPPAST_VERSION_STRING="${cppast_VERSION}"
+                                CPPAST_CLANG_BINARY=""
+                                CPPAST_CLANG_VERSION_STRING="${LLVM_VERSION}")
 target_compile_options(cppast PRIVATE
-                           # clang/GCC warnings
-                           $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
-                           -pedantic-errors -Werror -Wall -Wextra -Wconversion -Wsign-conversion>
-                           # disable noexcept type warning on GCC
-                           $<$<CXX_COMPILER_ID:GNU>: -Wno-noexcept-type>
-                           # MSVC warnings
-                           $<$<CXX_COMPILER_ID:MSVC>:
-                           /W3>)
+                                # clang/GCC warnings
+                                $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
+                                -pedantic-errors -Werror -Wall -Wextra -Wconversion -Wsign-conversion>
+                                # disable noexcept type warning on GCC
+                                $<$<CXX_COMPILER_ID:GNU>: -Wno-noexcept-type>
+                                # MSVC warnings
+                                $<$<CXX_COMPILER_ID:MSVC>:
+                                /W3>)
+
+
+# Link against LLVM libraries
+target_link_libraries(cppast PRIVATE ${llvm_libs})
+target_include_directories(cppast PRIVATE ${LLVM_INCLUDE_DIRS})
+
+target_include_directories(cppast PRIVATE ${CLANG_INCLUDE_DIRS})
+target_link_libraries(cppast PRIVATE libclang)
