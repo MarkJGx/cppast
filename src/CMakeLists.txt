@@ -102,10 +102,15 @@ set(libclang_source
         libclang/type_parser.cpp
         libclang/variable_parser.cpp)
 
-add_library(cppast ${detail_header} ${header} ${source} ${libclang_source})
+add_library(cppast STATIC ${detail_header} ${header} ${source} ${libclang_source})
+
 target_compile_features(cppast PUBLIC cxx_std_11)
 target_include_directories(cppast PRIVATE ../include SYSTEM INTERFACE ../include)
-target_link_libraries(cppast PUBLIC type_safe _cppast_tiny_process)
+
+# set(ADDITIONAL_LIBRARIES ${llvm_libs} ${CLANG_LIBS})
+
+target_link_libraries(cppast type_safe _cppast_tiny_process ${ADDITIONAL_LIBRARIES})
+
 target_compile_definitions(cppast PUBLIC
                                 CPPAST_VERSION_MINOR="${cppast_VERSION_MINOR}"
                                 CPPAST_VERSION_MAJOR="${cppast_VERSION_MAJOR}"
@@ -123,9 +128,19 @@ target_compile_options(cppast PRIVATE
                                 /W3>)
 
 
-# Link against LLVM libraries
-target_link_libraries(cppast PRIVATE ${llvm_libs})
-target_include_directories(cppast PRIVATE ${LLVM_INCLUDE_DIRS})
 
+
+# Link against LLVM libraries
+target_include_directories(cppast PRIVATE ${LLVM_INCLUDE_DIRS})
 target_include_directories(cppast PRIVATE ${CLANG_INCLUDE_DIRS})
-target_link_libraries(cppast PRIVATE libclang)
+
+bundle_static_library(cppast cppast_bundled)
+
+include(CheckIPOSupported)
+# Optional IPO. Do not use IPO if it's not supported by compiler.
+# check_ipo_supported(RESULT result OUTPUT output)
+# if(result)
+#   set_property(TARGET cppast_bundled PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+# else()
+#   message(WARNING "IPO is not supported: ${output}")
+# endif()

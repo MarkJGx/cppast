@@ -53,9 +53,15 @@ list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 # include(HandleLLVMOptions)
 # add_definitions(${LLVM_DEFINITIONS})
 # Find the libraries that correspond to the LLVM components that we wish to use
-llvm_map_components_to_libnames(llvm_libs Core Support)
+# llvm_map_components_to_libnames(llvm_libs Core Support)
 
 find_package(Clang CONFIG REQUIRED)
 
+set(CLANG_LIBS
+        libclang
+        clangIndex
+)
+
 message(STATUS "Found Clang (LLVM version: ${LLVM_VERSION})")
 message(STATUS "Include dirs: ${CLANG_INCLUDE_DIRS}")
+message(STATUS "Clang libraries: ${CLANG_LIBS}")
