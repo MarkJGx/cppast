@@ -109,7 +109,7 @@ target_include_directories(cppast PRIVATE ../include SYSTEM INTERFACE ../include
 
 # set(ADDITIONAL_LIBRARIES ${llvm_libs} ${CLANG_LIBS})
 
-target_link_libraries(cppast type_safe _cppast_tiny_process ${ADDITIONAL_LIBRARIES})
+target_link_libraries(cppast type_safe _cppast_tiny_process libclang ${ADDITIONAL_LIBRARIES})
 
 target_compile_definitions(cppast PUBLIC
                                 CPPAST_VERSION_MINOR="${cppast_VERSION_MINOR}"
